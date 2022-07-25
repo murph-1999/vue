@@ -58,6 +58,7 @@ export function initMixin(Vue: Class<Component>) {
     initLifecycle(vm)
     // vm的事件监听初始化，父组件绑定在当前组件上的事件
     initEvents(vm)
+    //$slots/$scopedSlots/_c/$createElement/$attrs/$listeners
     initRender(vm)
     // 触发beforeCreate
     callHook(vm, 'beforeCreate')

@@ -51,23 +51,29 @@ export default class Watcher {
     isRenderWatcher?: boolean
   ) {
     this.vm = vm
+    // 判断是否是渲染watcher
     if (isRenderWatcher) {
       vm._watcher = this
     }
+    // 记录了所有watcher，包括计算属性和侦听器
     vm._watchers.push(this)
     // options
     if (options) {
       this.deep = !!options.deep
+
       this.user = !!options.user
       // 是否延迟执行，比如计算属性的watcher是需要延迟执行的
       this.lazy = !!options.lazy
       this.sync = !!options.sync
+      // 触发beforeUpdate
       this.before = options.before
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
+    // 计算属性和侦听器会传入noop，这里是cb
     this.cb = cb
     this.id = ++uid // uid for batching
+    // 当前watcher是否是活动watcher
     this.active = true
     this.dirty = this.lazy // for lazy watchers
     this.deps = []
@@ -78,9 +84,12 @@ export default class Watcher {
       ? expOrFn.toString()
       : ''
     // parse expression for getter
+
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn
     } else {
+      // expOrFn是字符串时，如 watch：{'person.age':function()...}
+      // parsePath(expOrFn)返回一个函数获取person.age的值
       this.getter = parsePath(expOrFn)
       if (!this.getter) {
         this.getter = noop
@@ -92,6 +101,8 @@ export default class Watcher {
         )
       }
     }
+    // 若是计算属性，则将lazy设置为true
+    // 先不调用get，计算属性对应的方法是在render的过程中调用
     this.value = this.lazy
       ? undefined
       : this.get()
@@ -106,7 +117,7 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
-      // 调用updateComponent
+      // 若是renderWatcher，调用updateComponent
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -117,10 +128,13 @@ export default class Watcher {
     } finally {
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
+      // 深度监听
       if (this.deep) {
         traverse(value)
       }
+      // 弹出当前watcher
       popTarget()
+      // 移除dep subs中的该watcher，移除watcher中记录的dep
       this.cleanupDeps()
     }
     return value
@@ -129,12 +143,14 @@ export default class Watcher {
   /**
    * Add a dependency to this directive.
    */
+  // watcher中添加dep的原因是？
   addDep(dep: Dep) {
     const id = dep.id
     if (!this.newDepIds.has(id)) {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
+        // 收集依赖
         dep.addSub(this)
       }
     }
@@ -165,13 +181,16 @@ export default class Watcher {
    * Subscriber interface.
    * Will be called when a dependency changes.
    */
+  //
   update() {
     /* istanbul ignore else */
+
     if (this.lazy) {
       this.dirty = true
     } else if (this.sync) {
       this.run()
     } else {
+      // 渲染watcher只会执行这个
       queueWatcher(this)
     }
   }
@@ -181,7 +200,10 @@ export default class Watcher {
    * Will be called by the scheduler.
    */
   run() {
+    // 当前watcher是否存活
     if (this.active) {
+      // 触发该watcher的get方法
+      // 如果是渲染watcher，this.get()没有返回值，value为undefined
       const value = this.get()
       if (
         value !== this.value ||
@@ -194,8 +216,11 @@ export default class Watcher {
         // set new value
         const oldValue = this.value
         this.value = value
+        // 用户watcher
         if (this.user) {
+
           const info = `callback for watcher "${this.expression}"`
+          // 处理用户传入的回调异常情况
           invokeWithErrorHandling(this.cb, this.vm, [value, oldValue], this.vm, info)
         } else {
           this.cb.call(this.vm, value, oldValue)

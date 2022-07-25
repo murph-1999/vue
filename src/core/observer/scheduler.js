@@ -25,7 +25,7 @@ let index = 0
 /**
  * Reset the scheduler's state.
  */
-function resetSchedulerState () {
+function resetSchedulerState() {
   index = queue.length = activatedChildren.length = 0
   has = {}
   if (process.env.NODE_ENV !== 'production') {
@@ -68,8 +68,9 @@ if (inBrowser && !isIE) {
 /**
  * Flush both queues and run the watchers.
  */
-function flushSchedulerQueue () {
+function flushSchedulerQueue() {
   currentFlushTimestamp = getNow()
+  //正在处理watcher队列
   flushing = true
   let watcher, id
 
@@ -81,16 +82,19 @@ function flushSchedulerQueue () {
   //    user watchers are created before the render watcher)
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
+  // 按照watcher的创建顺序
   queue.sort((a, b) => a.id - b.id)
 
   // do not cache length because more watchers might be pushed
   // as we run existing watchers
   for (index = 0; index < queue.length; index++) {
     watcher = queue[index]
+    //渲染watcher才有的属性before，为了触发beforeUpdate
     if (watcher.before) {
       watcher.before()
     }
     id = watcher.id
+    // 该watcher已被处理
     has[id] = null
     watcher.run()
     // in dev build, check and stop circular updates.
@@ -127,7 +131,7 @@ function flushSchedulerQueue () {
   }
 }
 
-function callUpdatedHooks (queue) {
+function callUpdatedHooks(queue) {
   let i = queue.length
   while (i--) {
     const watcher = queue[i]
@@ -142,14 +146,14 @@ function callUpdatedHooks (queue) {
  * Queue a kept-alive component that was activated during patch.
  * The queue will be processed after the entire tree has been patched.
  */
-export function queueActivatedComponent (vm: Component) {
+export function queueActivatedComponent(vm: Component) {
   // setting _inactive to false here so that a render function can
   // rely on checking whether it's in an inactive tree (e.g. router-view)
   vm._inactive = false
   activatedChildren.push(vm)
 }
 
-function callActivatedHooks (queue) {
+function callActivatedHooks(queue) {
   for (let i = 0; i < queue.length; i++) {
     queue[i]._inactive = true
     activateChildComponent(queue[i], true /* true */)
@@ -161,26 +165,34 @@ function callActivatedHooks (queue) {
  * Jobs with duplicate IDs will be skipped unless it's
  * pushed when the queue is being flushed.
  */
-export function queueWatcher (watcher: Watcher) {
+export function queueWatcher(watcher: Watcher) {
   const id = watcher.id
+  // 防止watcher被重复处理
   if (has[id] == null) {
     has[id] = true
+    // 当前队列没有被处理的情况下
     if (!flushing) {
       queue.push(watcher)
     } else {
+      // 否则当前queue正在被处理
       // if already flushing, splice the watcher based on its id
       // if already past its id, it will be run next immediately.
       let i = queue.length - 1
+      // index表示当前处理到的queue的索引，i>index就表示当前queue还没有被处理完
+      // 找到watcher待插入的位置
       while (i > index && queue[i].id > watcher.id) {
         i--
       }
+      // 找到位置后，将watcher插入到i后面的一个位置
       queue.splice(i + 1, 0, watcher)
     }
     // queue the flush
+    // 判断当前队列是否被执行
     if (!waiting) {
       waiting = true
 
       if (process.env.NODE_ENV !== 'production' && !config.async) {
+        // 调用所有watcher，并调用watcher的run方法
         flushSchedulerQueue()
         return
       }

@@ -62,6 +62,7 @@ export function setCurrentRenderingInstance(vm: Component) {
 
 export function renderMixin(Vue: Class<Component>) {
   // install runtime convenience helpers
+  // 与渲染相关
   installRenderHelpers(Vue.prototype)
 
   Vue.prototype.$nextTick = function (fn: Function) {
@@ -70,6 +71,7 @@ export function renderMixin(Vue: Class<Component>) {
 
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
+    // 获取用户定义的render或者模版渲染的render
     const { render, _parentVnode } = vm.$options
 
     if (_parentVnode) {

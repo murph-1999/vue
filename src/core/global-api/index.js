@@ -3,7 +3,7 @@
  * @version:
  * @Author: Murphy
  * @Date: 2022-07-02 12:30:56
- * @LastEditTime: 2022-07-02 18:11:46
+ * @LastEditTime: 2022-07-17 18:35:28
  */
 /* @flow */
 
@@ -43,6 +43,7 @@ export function initGlobalAPI(Vue: GlobalAPI) {
   // exposed util methods.
   // NOTE: these are not considered part of the public API - avoid relying on
   // them unless you are aware of the risk.
+  // 这些工具方法不视作全局api的一部分，除非你已经意识到某些风险，否则不要去依赖他们
   Vue.util = {
     warn,
     extend,

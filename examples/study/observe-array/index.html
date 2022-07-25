@@ -1,0 +1,36 @@
+<!--
+ * @Description:1.数组响应式的处理过程和数组收集依赖的过程；2.当数组的数据改变时watcher的执行过程
+ * @version:
+ * @Author: Murphy
+ * @Date: 2022-07-02 14:36:38
+ * @LastEditTime: 2022-07-10 15:45:01
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">{{arr}}</div>
+  <script src="../../../dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data: {
+        arr: [1, 2, 3]
+      }
+    })
+    vm.arr.push(100)
+    // 控制台中动态通过数组索引修改数组元素，视图会修改吗？不会，通过索引直接修改的方式不会触发notify
+    // vm.arr[0] = 100
+    // vm.arr.length = 0
+
+  </script>
+</body>
+
+</html>

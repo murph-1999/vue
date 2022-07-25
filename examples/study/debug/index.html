@@ -1,0 +1,34 @@
+<!--
+ * @Description:同时传入template和render函数会执行哪一个
+ * @version:
+ * @Author: Murphy
+ * @Date: 2022-07-02 14:36:38
+ * @LastEditTime: 2022-07-18 21:56:12
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="../../../dist/vue.js"></script>
+  <script>
+    // 会渲染哪一个呢
+    const vm = new Vue({
+      el: '#app',
+      template: '<h1>hello template</h1>',
+      render(h) {
+        return h('h1', 'hello render')
+      }
+    })
+
+  </script>
+</body>
+
+</html>

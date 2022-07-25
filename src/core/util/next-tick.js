@@ -10,8 +10,9 @@ export let isUsingMicroTask = false
 const callbacks = []
 let pending = false
 
-function flushCallbacks () {
+function flushCallbacks() {
   pending = false
+  // 备份一个callbacks
   const copies = callbacks.slice(0)
   callbacks.length = 0
   for (let i = 0; i < copies.length; i++) {
@@ -51,9 +52,11 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
     if (isIOS) setTimeout(noop)
   }
   isUsingMicroTask = true
+
 } else if (!isIE && typeof MutationObserver !== 'undefined' && (
   isNative(MutationObserver) ||
   // PhantomJS and iOS 7.x
+  // MutationObserver用来监听dom对象的改变
   MutationObserver.toString() === '[object MutationObserverConstructor]'
 )) {
   // Use MutationObserver where native Promise is not available,
@@ -84,9 +87,10 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
   }
 }
 
-export function nextTick (cb?: Function, ctx?: Object) {
+export function nextTick(cb?: Function, ctx?: Object) {
   let _resolve
   callbacks.push(() => {
+    // 将cb存入callback数组中
     if (cb) {
       try {
         cb.call(ctx)

@@ -88,14 +88,14 @@ export function lifecycleMixin(Vue: Class<Component>) {
     // updated hook is called by the scheduler to ensure that children are
     // updated in a parent's updated hook.
   }
-
+  // 强制更新
   Vue.prototype.$forceUpdate = function () {
     const vm: Component = this
     if (vm._watcher) {
       vm._watcher.update()
     }
   }
-
+  // 销毁vue实例
   Vue.prototype.$destroy = function () {
     const vm: Component = this
     if (vm._isBeingDestroyed) {

@@ -155,7 +155,7 @@ function initData(vm: Component) {
       proxy(vm, `_data`, key)
     }
   }
-  // observe data
+  // observe data 响应式的起点
   observe(data, true /* asRootData */)
 }
 
@@ -171,7 +171,7 @@ export function getData(data: Function, vm: Component): any {
     popTarget()
   }
 }
-
+// 计算属性
 const computedWatcherOptions = { lazy: true }
 
 function initComputed(vm: Component, computed: Object) {
@@ -350,7 +350,7 @@ export function stateMixin(Vue: Class<Component>) {
       warn(`$props is readonly.`, this)
     }
   }
-  // 这里为什么不直接修改 Vue.prototype.$data
+  // 这里为什么不直接修改 Vue.prototype.$data，不允许直接给$data,$props赋值
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
@@ -367,14 +367,18 @@ export function stateMixin(Vue: Class<Component>) {
       return createWatcher(vm, expOrFn, cb, options)
     }
     options = options || {}
+    // 标记为用户watcher
     options.user = true
     const watcher = new Watcher(vm, expOrFn, cb, options)
+    // 判断是否要立即执行回调函数
     if (options.immediate) {
+      // 立即执行一次cb回调，并且把当前值传入
       const info = `callback for immediate watcher "${watcher.expression}"`
       pushTarget()
       invokeWithErrorHandling(cb, vm, [watcher.value], vm, info)
       popTarget()
     }
+    // 返回取消监听的方法
     return function unwatchFn() {
       watcher.teardown()
     }

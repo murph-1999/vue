@@ -1,9 +1,9 @@
 <!--
- * @Description:
+ * @Description:调试依赖收集
  * @version:
  * @Author: Murphy
- * @Date: 2022-07-02 14:36:38
- * @LastEditTime: 2022-07-02 14:40:07
+ * @Date: 2022-07-09 12:25:58
+ * @LastEditTime: 2022-07-22 22:54:01
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -16,14 +16,19 @@
 </head>
 
 <body>
-  <div id="app"></div>
-  <script src="../../dist/vue.js"></script>
+  <div id="app">
+    <h1>{{msg}}</h1>
+    {{msg}}
+    <hr>
+    {{count}}
+  </div>
+  <script src="../../../dist/vue.js"></script>
   <script>
     const vm = new Vue({
       el: '#app',
-      template: '<h1>hello template</h1>',
-      render(h) {
-        return h('h1', 'hello render')
+      data: {
+        msg: 'hello vue',
+        count: 100
       }
     })
 
