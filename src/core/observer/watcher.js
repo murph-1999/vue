@@ -70,7 +70,7 @@ export default class Watcher {
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
-    // 计算属性和侦听器会传入noop，这里是cb
+    // 计算属性和侦听器会传入noop
     this.cb = cb
     this.id = ++uid // uid for batching
     // 当前watcher是否是活动watcher

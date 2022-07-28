@@ -188,10 +188,11 @@ export function defineReactive(
       const value = getter ? getter.call(obj) : val
       // 如果存在当前依赖目标，即watcher对象存在，则建立依赖
       if (Dep.target) {
+        //
         dep.depend()
         // 如果存在子观察目标存在，建立子对象的依赖关系
         if (childOb) {
-          // 为子对象收集依赖，这个dep跟当前属性的dep是不同的，为什么要给子对象加上dep呢？因为子对象添加删除等操作也需要是响应式，$set $delete
+          // 为子对象收集依赖，这个dep跟当前属性的dep是不同的，以数组为例，数组的dep对应的数组本身，为什么要给子对象加上dep呢？因为子对象添加删除等操作也需要是响应式，也就是数组的元素发生改变时也需要发送通知，$set $delete
           childOb.dep.depend()
           //属性是数组时，则特殊处理收集数组对象依赖
           if (Array.isArray(value)) {

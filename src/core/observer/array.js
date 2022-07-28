@@ -3,7 +3,7 @@
  * @version:
  * @Author: Murphy
  * @Date: 2022-07-02 12:30:56
- * @LastEditTime: 2022-07-10 11:42:00
+ * @LastEditTime: 2022-07-27 23:10:00
  */
 /*
  * not type checking this file because flow doesn't play well with
@@ -38,6 +38,7 @@ methodsToPatch.forEach(function (method) {
     const result = original.apply(this, args)
     // 获取数组对象的observe对象
     const ob = this.__ob__
+    // 处理会给数组新增元素的方法
     // 存储数组中新增的元素
     let inserted
     switch (method) {

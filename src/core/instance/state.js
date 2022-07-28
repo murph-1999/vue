@@ -36,6 +36,7 @@ const sharedPropertyDefinition = {
   set: noop
 }
 
+// 代理 访问属性 触发get
 export function proxy(target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter() {
     return this[sourceKey][key]
@@ -152,6 +153,7 @@ function initData(vm: Component) {
       )
     } else if (!isReserved(key)) {
       // 当不是以_或$开头，才将注入到实例中
+      // proxy代理，设置proxyGetter和proxySetter
       proxy(vm, `_data`, key)
     }
   }

@@ -70,7 +70,7 @@ if (inBrowser && !isIE) {
  */
 function flushSchedulerQueue() {
   currentFlushTimestamp = getNow()
-  //正在处理watcher队列
+  //标记正在处理watcher队列
   flushing = true
   let watcher, id
 
@@ -82,7 +82,7 @@ function flushSchedulerQueue() {
   //    user watchers are created before the render watcher)
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
-  // 按照watcher的创建顺序
+  // 按照watcher的创建顺序排序
   queue.sort((a, b) => a.id - b.id)
 
   // do not cache length because more watchers might be pushed
@@ -94,8 +94,9 @@ function flushSchedulerQueue() {
       watcher.before()
     }
     id = watcher.id
-    // 该watcher已被处理
+    // 标记该watcher已被处理
     has[id] = null
+    // 更新视图
     watcher.run()
     // in dev build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
@@ -118,6 +119,7 @@ function flushSchedulerQueue() {
   const activatedQueue = activatedChildren.slice()
   const updatedQueue = queue.slice()
 
+  // 清空队列
   resetSchedulerState()
 
   // call component updated and activated hooks
