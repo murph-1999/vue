@@ -46,12 +46,12 @@ const encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#39|#10|#9);/g
 const isIgnoreNewlineTag = makeMap('pre,textarea', true)
 const shouldIgnoreFirstNewline = (tag, html) => tag && isIgnoreNewlineTag(tag) && html[0] === '\n'
 
-function decodeAttr (value, shouldDecodeNewlines) {
+function decodeAttr(value, shouldDecodeNewlines) {
   const re = shouldDecodeNewlines ? encodedAttrWithNewLines : encodedAttr
   return value.replace(re, match => decodingMap[match])
 }
 
-export function parseHTML (html, options) {
+export function parseHTML(html, options) {
   const stack = []
   const expectHTML = options.expectHTML
   const isUnaryTag = options.isUnaryTag || no
@@ -63,7 +63,9 @@ export function parseHTML (html, options) {
     // Make sure we're not in a plaintext content element like script/style
     if (!lastTag || !isPlainTextElement(lastTag)) {
       let textEnd = html.indexOf('<')
+      // 如果html里一个是’<‘符号
       if (textEnd === 0) {
+        // 如果是注释
         // Comment:
         if (comment.test(html)) {
           const commentEnd = html.indexOf('-->')
@@ -76,7 +78,7 @@ export function parseHTML (html, options) {
             continue
           }
         }
-
+        // 条件注释
         // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
         if (conditionalComment.test(html)) {
           const conditionalEnd = html.indexOf(']>')
@@ -116,7 +118,9 @@ export function parseHTML (html, options) {
 
       let text, rest, next
       if (textEnd >= 0) {
+        // 截取剩余模版
         rest = html.slice(textEnd)
+        // 如果剩余模版都不符合以下这些特征，说明<是文本的一部分，所以拼接上
         while (
           !endTag.test(rest) &&
           !startTagOpen.test(rest) &&
@@ -129,6 +133,7 @@ export function parseHTML (html, options) {
           textEnd += next
           rest = html.slice(textEnd)
         }
+        // 如果符合的话，直接截取
         text = html.substring(0, textEnd)
       }
 
@@ -139,7 +144,7 @@ export function parseHTML (html, options) {
       if (text) {
         advance(text.length)
       }
-
+      // 文本解析器
       if (options.chars && text) {
         options.chars(text, index - text.length, index)
       }
@@ -157,6 +162,7 @@ export function parseHTML (html, options) {
         if (shouldIgnoreFirstNewline(stackedTag, text)) {
           text = text.slice(1)
         }
+        // 文本解析器
         if (options.chars) {
           options.chars(text)
         }
@@ -179,12 +185,12 @@ export function parseHTML (html, options) {
   // Clean up any remaining tags
   parseEndTag()
 
-  function advance (n) {
+  function advance(n) {
     index += n
     html = html.substring(n)
   }
 
-  function parseStartTag () {
+  function parseStartTag() {
     const start = html.match(startTagOpen)
     if (start) {
       const match = {
@@ -209,7 +215,7 @@ export function parseHTML (html, options) {
     }
   }
 
-  function handleStartTag (match) {
+  function handleStartTag(match) {
     const tagName = match.tagName
     const unarySlash = match.unarySlash
 
@@ -252,7 +258,7 @@ export function parseHTML (html, options) {
     }
   }
 
-  function parseEndTag (tagName, start, end) {
+  function parseEndTag(tagName, start, end) {
     let pos, lowerCasedTagName
     if (start == null) start = index
     if (end == null) end = index

@@ -18,7 +18,8 @@ const genStaticKeysCached = cached(genStaticKeys)
  *    create fresh nodes for them on each re-render;
  * 2. Completely skip them in the patching process.
  */
-export function optimize (root: ?ASTElement, options: CompilerOptions) {
+// 每次重新渲染，不需要为静态子树创建新节点，会直接克隆已存在的静态子树
+export function optimize(root: ?ASTElement, options: CompilerOptions) {
   if (!root) return
   isStaticKey = genStaticKeysCached(options.staticKeys || '')
   isPlatformReservedTag = options.isReservedTag || no
@@ -28,14 +29,15 @@ export function optimize (root: ?ASTElement, options: CompilerOptions) {
   markStaticRoots(root, false)
 }
 
-function genStaticKeys (keys: string): Function {
+function genStaticKeys(keys: string): Function {
   return makeMap(
     'type,tag,attrsList,attrsMap,plain,parent,children,attrs,start,end,rawAttrsMap' +
     (keys ? ',' + keys : '')
   )
 }
 
-function markStatic (node: ASTNode) {
+// 从上往下递归，父节点如果先被打了静态标记，如果子存在非静态的，得将父节点的标记重新设置为false
+function markStatic(node: ASTNode) {
   node.static = isStatic(node)
   if (node.type === 1) {
     // do not make component slot content static. this avoids
@@ -67,7 +69,8 @@ function markStatic (node: ASTNode) {
   }
 }
 
-function markStaticRoots (node: ASTNode, isInFor: boolean) {
+// 一个节点如果被标记为静态根节点，说明下面的所有子节点都为静态节点，就不会去子节点继续找
+function markStaticRoots(node: ASTNode, isInFor: boolean) {
   if (node.type === 1) {
     if (node.static || node.once) {
       node.staticInFor = isInFor
@@ -97,10 +100,12 @@ function markStaticRoots (node: ASTNode, isInFor: boolean) {
   }
 }
 
-function isStatic (node: ASTNode): boolean {
+function isStatic(node: ASTNode): boolean {
+  // 带变量的文本节点
   if (node.type === 2) { // expression
     return false
   }
+  // 纯文本节点
   if (node.type === 3) { // text
     return true
   }
@@ -114,7 +119,7 @@ function isStatic (node: ASTNode): boolean {
   ))
 }
 
-function isDirectChildOfTemplateFor (node: ASTElement): boolean {
+function isDirectChildOfTemplateFor(node: ASTElement): boolean {
   while (node.parent) {
     node = node.parent
     if (node.tag !== 'template') {

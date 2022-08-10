@@ -271,7 +271,7 @@ export function set(target: Array<any> | Object, key: any, val: any): any {
   }
   // 把key设置为响应式属性
   defineReactive(ob.value, key, val)
-  // 发送通知
+  // 发送通知，因为子观察对象收集过依赖，所以这里可以派发更新
   ob.dep.notify()
   return val
 }

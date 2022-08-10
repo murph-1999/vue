@@ -3,7 +3,7 @@
  * @version:
  * @Author: Murphy
  * @Date: 2022-07-02 14:36:38
- * @LastEditTime: 2022-07-18 21:56:12
+ * @LastEditTime: 2022-08-10 13:32:58
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -16,16 +16,18 @@
 </head>
 
 <body>
-  <div id="app"></div>
+  <div id="app">
+    <div>example</div>
+  </div>
   <script src="../../../dist/vue.js"></script>
   <script>
     // 会渲染哪一个呢
     const vm = new Vue({
       el: '#app',
-      template: '<h1>hello template</h1>',
-      render(h) {
-        return h('h1', 'hello render')
-      }
+      // template: '<h1>hello template</h1>',
+      // render(h) {
+      //   return h('h1', 'hello render')
+      // }
     })
 
   </script>
