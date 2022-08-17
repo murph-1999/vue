@@ -303,9 +303,11 @@ function initMethods(vm: Component, methods: Object) {
   }
 }
 
+// 注册watcher
 function initWatch(vm: Component, watch: Object) {
   for (const key in watch) {
     const handler = watch[key]
+    // 对象的属性值是数组时，数组遍历执行create
     if (Array.isArray(handler)) {
       for (let i = 0; i < handler.length; i++) {
         createWatcher(vm, key, handler[i])
@@ -329,6 +331,7 @@ function createWatcher(
   if (typeof handler === 'string') {
     handler = vm[handler]
   }
+  // 这时的handler是监听函数，但是handler原先是一个对象，对象的handler也是对象
   return vm.$watch(expOrFn, handler, options)
 }
 
@@ -365,6 +368,7 @@ export function stateMixin(Vue: Class<Component>) {
     options?: Object
   ): Function {
     const vm: Component = this
+    // cb 就是handler，当cb是一个对象时，非function，重新执行createWatcher
     if (isPlainObject(cb)) {
       return createWatcher(vm, expOrFn, cb, options)
     }

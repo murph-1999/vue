@@ -15,6 +15,7 @@ function flushCallbacks() {
   // 备份一个callbacks
   const copies = callbacks.slice(0)
   callbacks.length = 0
+  // 依次执行callbacks中的cb
   for (let i = 0; i < copies.length; i++) {
     copies[i]()
   }
@@ -43,6 +44,7 @@ let timerFunc
 if (typeof Promise !== 'undefined' && isNative(Promise)) {
   const p = Promise.resolve()
   timerFunc = () => {
+    // promise，下一个tick调用flushCallbacks，
     p.then(flushCallbacks)
     // In problematic UIWebViews, Promise.then doesn't completely break, but
     // it can get stuck in a weird state where callbacks are pushed into the
@@ -77,6 +79,8 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
   // Fallback to setImmediate.
   // Technically it leverages the (macro) task queue,
   // but it is still a better choice than setTimeout.
+  // 因为setImmediate会立即执行，而setTimeout至少要4ms后才能执行
+  // 但是setImmediate只在ie和node环境中有效
   timerFunc = () => {
     setImmediate(flushCallbacks)
   }
@@ -101,8 +105,10 @@ export function nextTick(cb?: Function, ctx?: Object) {
       _resolve(ctx)
     }
   })
+  // 队列是否在被处理中
   if (!pending) {
     pending = true
+    // 找到callbacks中所有cb依次调用，异步执行flushCallbacks
     timerFunc()
   }
   // $flow-disable-line

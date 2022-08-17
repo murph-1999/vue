@@ -198,6 +198,7 @@ export function queueWatcher(watcher: Watcher) {
         flushSchedulerQueue()
         return
       }
+      // 调用nexttick，在下一个tick执行flushSchedulerQueue
       nextTick(flushSchedulerQueue)
     }
   }

@@ -3,7 +3,7 @@
  * @version:
  * @Author: Murphy
  * @Date: 2022-07-17 12:33:53
- * @LastEditTime: 2022-07-17 12:40:36
+ * @LastEditTime: 2022-08-17 15:47:11
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -40,13 +40,15 @@
         }
       },
       watch: {
-        'user': {
+        'user.lastName': {
           handler: function (newVal, oldVal) {
-            this.user.fullName = this.user.firstName + '' + this.user.lastName
+            this.user.fullName = this.user.firstName + '' + newVal
           }
         }
       }
     })
+
+    vm.user.lastName = 'KKK'
 
   </script>
 </body>

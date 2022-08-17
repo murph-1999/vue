@@ -118,6 +118,8 @@ export default class Watcher {
     const vm = this.vm
     try {
       // 若是renderWatcher，调用updateComponent
+      // 若是用户watcher，获取属性的值
+      // 而且是对属性进行层级访问，触发 data 中目标属性的 get 方法, 触发属性对应的 dep.depend 方法, 进行依赖收集
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -129,6 +131,7 @@ export default class Watcher {
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
       // 深度监听
+      // 当data的属性发生变动时，触发属性的set方法
       if (this.deep) {
         traverse(value)
       }
@@ -202,9 +205,10 @@ export default class Watcher {
   run() {
     // 当前watcher是否存活
     if (this.active) {
-      // 触发该watcher的get方法
+      // 触发该watcher的get方法，获取该属性的值
       // 如果是渲染watcher，this.get()没有返回值，value为undefined
       const value = this.get()
+      // 新值和旧值（旧值通过this.get()返回的值）比较，如果不相同继续下一步
       if (
         value !== this.value ||
         // Deep watchers and watchers on Object/Arrays should fire even
