@@ -3,7 +3,7 @@
  * @version:
  * @Author: Murphy
  * @Date: 2022-07-02 12:30:56
- * @LastEditTime: 2022-07-02 18:04:15
+ * @LastEditTime: 2022-09-05 14:37:30
  */
 /* @flow */
 
@@ -23,12 +23,14 @@ export function initExtend(Vue: GlobalAPI) {
   /**
    * Class inheritance
    */
+  /*  使用基础 Vue 构造器，创建一个“子类”。参数是一个包含组件选项的对象extendOptions。*/
+
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {}
     // Vue构造函数
     const Super = this
     const SuperId = Super.cid
-    // 从缓存中加载组件的构造函数
+    // 先尝试从缓存中加载组件的构造函数
     const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
     if (cachedCtors[SuperId]) {
       return cachedCtors[SuperId]
@@ -38,7 +40,8 @@ export function initExtend(Vue: GlobalAPI) {
     if (process.env.NODE_ENV !== 'production' && name) {
       validateComponentName(name)
     }
-
+    // 定义子类构造函数Sub，同Vue
+    // _init将会在创建其对应的 Vnode 对象时在函数 createComponent 中执行。
     const Sub = function VueComponent(options) {
       this._init(options)
     }
@@ -46,6 +49,7 @@ export function initExtend(Vue: GlobalAPI) {
     Sub.prototype = Object.create(Super.prototype)
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
+    // 合并options
     Sub.options = mergeOptions(
       Super.options,
       extendOptions
@@ -69,6 +73,8 @@ export function initExtend(Vue: GlobalAPI) {
 
     // create asset registers, so extended classes
     // can have their private assets too.
+    // Vue.component\Vue.directive\Vue.filter 赋给子类
+
     ASSET_TYPES.forEach(function (type) {
       Sub[type] = Super[type]
     })
