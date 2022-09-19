@@ -1,23 +1,32 @@
+/*
+ * @Description:
+ * @version:
+ * @Author: Murphy
+ * @Date: 2022-07-02 12:30:56
+ * @LastEditTime: 2022-09-19 16:22:15
+ */
 /* @flow */
 
 import { extend } from 'shared/util'
 import { detectErrors } from './error-detector'
 import { createCompileToFunctionFn } from './to-function'
 
-export function createCompilerCreator (baseCompile: Function): Function {
-  return function createCompiler (baseOptions: CompilerOptions) {
-    function compile (
+export function createCompilerCreator(baseCompile: Function): Function {
+  return function createCompiler(baseOptions: CompilerOptions) {
+    function compile(
       template: string,
       options?: CompilerOptions
     ): CompiledResult {
+      // 合并baseOptions和options
       const finalOptions = Object.create(baseOptions)
+      // 存储编译过程中的信息
       const errors = []
       const tips = []
 
       let warn = (msg, range, tip) => {
         (tip ? tips : errors).push(msg)
       }
-
+      // 如果存在 合并
       if (options) {
         if (process.env.NODE_ENV !== 'production' && options.outputSourceRange) {
           // $flow-disable-line
@@ -58,6 +67,7 @@ export function createCompilerCreator (baseCompile: Function): Function {
 
       finalOptions.warn = warn
 
+      // 将模版编译成render函数，这时候还是字符串的代码，不是最后的render函数
       const compiled = baseCompile(template.trim(), finalOptions)
       if (process.env.NODE_ENV !== 'production') {
         detectErrors(compiled.ast, warn)

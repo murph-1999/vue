@@ -24,8 +24,10 @@ export function optimize(root: ?ASTElement, options: CompilerOptions) {
   isStaticKey = genStaticKeysCached(options.staticKeys || '')
   isPlatformReservedTag = options.isReservedTag || no
   // first pass: mark all non-static nodes.
+  // 标记静态节点
   markStatic(root)
   // second pass: mark static roots.
+  // 标记静态根节点
   markStaticRoots(root, false)
 }
 
@@ -78,6 +80,7 @@ function markStaticRoots(node: ASTNode, isInFor: boolean) {
     // For a node to qualify as a static root, it should have children that
     // are not just static text. Otherwise the cost of hoisting out will
     // outweigh the benefits and it's better off to just always render it fresh.
+    // 如果一个元素内只有文本节点，不是静态root，也就不会去优化
     if (node.static && node.children.length && !(
       node.children.length === 1 &&
       node.children[0].type === 3

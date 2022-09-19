@@ -1,0 +1,42 @@
+<!--
+ * @Description:ast 调试
+ * @version:
+ * @Author: Murphy
+ * @Date: 2022-07-02 14:36:38
+ * @LastEditTime: 2022-09-19 13:46:08
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>init vue</title>
+</head>
+
+<body>
+  <div id="app">
+    <h1>Vue<span>模版编译过程</span></h1>
+    <div>{{msg}}<p>hello</p>
+    </div>
+    <div>是否显示</div>
+  </div>
+  <script src="../../../dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data: {
+        msg: 'hello init vue'
+      },
+      methods: {
+        handler() {
+          console.log('test');
+        }
+      }
+    })
+
+  </script>
+</body>
+
+</html>
