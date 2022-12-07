@@ -25,7 +25,7 @@ const ALWAYS_NORMALIZE = 2
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
-export function createElement (
+export function createElement(
   context: Component,
   tag: any,
   data: any,
@@ -33,18 +33,21 @@ export function createElement (
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
+  // 是否是数组（子节点）或原始值（标签中的内容）
   if (Array.isArray(data) || isPrimitive(data)) {
     normalizationType = children
     children = data
     data = undefined
   }
+  // 用户传入的render，为了后续处理children
   if (isTrue(alwaysNormalize)) {
     normalizationType = ALWAYS_NORMALIZE
   }
   return _createElement(context, tag, data, children, normalizationType)
 }
 
-export function _createElement (
+// 创建vnode对象
+export function _createElement(
   context: Component,
   tag?: string | Class<Component> | Function | Object,
   data?: VNodeData,
@@ -60,6 +63,7 @@ export function _createElement (
     return createEmptyVNode()
   }
   // object syntax in v-bind
+  // is 动态组件
   if (isDef(data) && isDef(data.is)) {
     tag = data.is
   }
@@ -80,6 +84,7 @@ export function _createElement (
     }
   }
   // support single function children as default scoped slot
+  // 处理作用域插槽
   if (Array.isArray(children) &&
     typeof children[0] === 'function'
   ) {
@@ -87,6 +92,7 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
+  // 用户传入的render函数
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
@@ -96,6 +102,7 @@ export function _createElement (
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
+    // 是否是html的保留标签
     if (config.isReservedTag(tag)) {
       // platform built-in elements
       if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.nativeOn) && data.tag !== 'component') {
@@ -110,6 +117,8 @@ export function _createElement (
       )
     } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
+      // tag为组件
+      // 查找自定义组件构造函数的声明
       vnode = createComponent(Ctor, data, context, children, tag)
     } else {
       // unknown or unlisted namespaced elements
@@ -122,6 +131,7 @@ export function _createElement (
     }
   } else {
     // direct component options / constructor
+    // tag为组件或组件构造函数
     vnode = createComponent(tag, data, context, children)
   }
   if (Array.isArray(vnode)) {
@@ -135,7 +145,7 @@ export function _createElement (
   }
 }
 
-function applyNS (vnode, ns, force) {
+function applyNS(vnode, ns, force) {
   vnode.ns = ns
   if (vnode.tag === 'foreignObject') {
     // use default namespace inside foreignObject
@@ -156,7 +166,7 @@ function applyNS (vnode, ns, force) {
 // ref #5318
 // necessary to ensure parent re-render when deep bindings like :style and
 // :class are used on slot nodes
-function registerDeepBindings (data) {
+function registerDeepBindings(data) {
   if (isObject(data.style)) {
     traverse(data.style)
   }

@@ -3,7 +3,7 @@
  * @version:
  * @Author: Murphy
  * @Date: 2022-07-02 12:30:56
- * @LastEditTime: 2022-07-03 12:40:19
+ * @LastEditTime: 2022-11-01 16:46:39
  */
 import { initMixin } from './init'
 import { stateMixin } from './state'
@@ -30,7 +30,7 @@ eventsMixin(Vue)
 // 初始化生命周期相关的混入方法
 // _update/$forceUpdate/$destroy
 lifecycleMixin(Vue)
-// 混入render
+// 混入和实例方法$nexttick/render
 // $nexttick/render
 renderMixin(Vue)
 

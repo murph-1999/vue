@@ -35,6 +35,7 @@ import {
 // inline hooks to be invoked on component VNodes during patch
 const componentVNodeHooks = {
   init(vnode: VNodeWithData, hydrating: boolean): ?boolean {
+    // 处理keep-alive
     if (
       vnode.componentInstance &&
       !vnode.componentInstance._isDestroyed &&
@@ -44,10 +45,13 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
+      //  真正创建组件的地方
+      // activeInstance 当前组件对象的父组件对象
       const child = vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance
       )
+      // 只是创建了该组件的真实dom，但是还没挂载dom树，挂载是在patch的createComponent中
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
@@ -109,9 +113,12 @@ export function createComponent(
     return
   }
 
+  // _base是vue构造函数
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
+  // 如果ctor不是一个构造函数 而是一个选项对象
+  // 通过Vue.extend来创建一个子组件的构造函数
   if (isObject(Ctor)) {
     Ctor = baseCtor.extend(Ctor)
   }
@@ -148,6 +155,8 @@ export function createComponent(
 
   // resolve constructor options in case global mixins are applied after
   // component constructor creation
+  // 更新后的父类options合并到Ctor.options
+  // 组件构造函数创建完毕后，合并当前组件选项和mixin的选项
   resolveConstructorOptions(Ctor)
 
   // transform component v-model data into props & events
@@ -159,6 +168,7 @@ export function createComponent(
   const propsData = extractPropsFromVNodeData(data, Ctor, tag)
 
   // functional component
+  // 函数式组件
   if (isTrue(Ctor.options.functional)) {
     return createFunctionalComponent(Ctor, propsData, data, context, children)
   }
@@ -183,10 +193,12 @@ export function createComponent(
   }
 
   // install component management hooks onto the placeholder node
+  // 安装组件的钩子函数 init prepatch insert destroy
   installComponentHooks(data)
 
   // return a placeholder vnode
   const name = Ctor.options.name || tag
+  // 创建自定义组件的vnode，占位的
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
     data, undefined, undefined, undefined, context,
@@ -222,11 +234,12 @@ export function createComponentInstanceForVnode(
     options.render = inlineTemplate.render
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
-  // 调用VueComponent中继续执行_init
+  // 创建组件实例
   return new vnode.componentOptions.Ctor(options)
 }
 
 function installComponentHooks(data: VNodeData) {
+  // data.hook 用户传入的
   const hooks = data.hook || (data.hook = {})
   for (let i = 0; i < hooksToMerge.length; i++) {
     const key = hooksToMerge[i]

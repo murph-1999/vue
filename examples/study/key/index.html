@@ -1,0 +1,45 @@
+<!--
+ * @Description:
+ * @version:
+ * @Author: Murphy
+ * @Date: 2022-07-02 14:36:38
+ * @LastEditTime: 2022-09-27 20:10:15
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vue key</title>
+</head>
+<!-- 不设置key时 ,更新了三次dom，插入了一次dom -->
+<!-- 设置key时，只插入了一次dom -->
+
+<body>
+  <div id="app">
+    <button @click="handler">添加</button>
+    <ul>
+      <li v-for="value in arr" :key="value">{{value}}</li>
+    </ul>
+
+  </div>
+  <script src="../../../dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data: {
+        arr: ['a', 'b', 'c', 'd']
+      },
+      methods: {
+        handler() {
+          this.arr.splice(1, 0, 'x')
+        }
+      }
+    })
+
+  </script>
+</body>
+
+</html>

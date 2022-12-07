@@ -3,7 +3,7 @@
  * @version:
  * @Author: Murphy
  * @Date: 2022-07-02 12:30:56
- * @LastEditTime: 2022-09-05 14:37:30
+ * @LastEditTime: 2022-09-21 16:56:33
  */
 /* @flow */
 
@@ -18,6 +18,7 @@ export function initExtend(Vue: GlobalAPI) {
    * constructors" for prototypal inheritance and cache them.
    */
   Vue.cid = 0
+  // 用来标识当前组件构造函数，作为唯一的键
   let cid = 1
 
   /**
@@ -37,7 +38,10 @@ export function initExtend(Vue: GlobalAPI) {
     }
 
     const name = extendOptions.name || Super.options.name
+
     if (process.env.NODE_ENV !== 'production' && name) {
+      // 再次验证的原因是因为extend 可以被单独调用
+      // 所以需要再次验证
       validateComponentName(name)
     }
     // 定义子类构造函数Sub，同Vue
@@ -45,7 +49,8 @@ export function initExtend(Vue: GlobalAPI) {
     const Sub = function VueComponent(options) {
       this._init(options)
     }
-    // 原型继承于Vue
+    // 原型继承于 Vue
+    // 所以sub实例也有init
     Sub.prototype = Object.create(Super.prototype)
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
@@ -91,6 +96,7 @@ export function initExtend(Vue: GlobalAPI) {
     Sub.sealedOptions = extend({}, Sub.options)
 
     // cache constructor
+    // 将组件的构造函数缓存到options._Ctor
     cachedCtors[SuperId] = Sub
     return Sub
   }

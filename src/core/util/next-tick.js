@@ -11,6 +11,7 @@ const callbacks = []
 let pending = false
 
 function flushCallbacks() {
+  // 改变pending状态值
   pending = false
   // 备份一个callbacks
   const copies = callbacks.slice(0)
@@ -93,8 +94,9 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
 
 export function nextTick(cb?: Function, ctx?: Object) {
   let _resolve
+  // 存储回调函数
   callbacks.push(() => {
-    // 将cb存入callback数组中
+    // cb是用户传入的，将cb存入callback数组中
     if (cb) {
       try {
         cb.call(ctx)

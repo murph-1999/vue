@@ -23,6 +23,7 @@ export let isUpdatingChildComponent: boolean = false
 
 export function setActiveInstance(vm: Component) {
   const prevActiveInstance = activeInstance
+  // 记录父组件对象
   activeInstance = vm
   return () => {
     activeInstance = prevActiveInstance
@@ -33,6 +34,7 @@ export function initLifecycle(vm: Component) {
   const options = vm.$options
 
   // locate first non-abstract parent
+  // 将子组件push到父组件中 建立父子组件关系
   let parent = options.parent
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
@@ -62,12 +64,14 @@ export function lifecycleMixin(Vue: Class<Component>) {
     const vm: Component = this
     const prevEl = vm.$el
     const prevVnode = vm._vnode
+    // 缓存当前vm实例
     const restoreActiveInstance = setActiveInstance(vm)
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     if (!prevVnode) {
       // initial render
+      // 将vm.$el转换成vnode，与当前vnode比较，将比较的结果更新到真实的dom，并存储到$el中
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates

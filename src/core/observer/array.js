@@ -3,7 +3,7 @@
  * @version:
  * @Author: Murphy
  * @Date: 2022-07-02 12:30:56
- * @LastEditTime: 2022-07-27 23:10:00
+ * @LastEditTime: 2022-10-27 20:28:46
  */
 /*
  * not type checking this file because flow doesn't play well with
@@ -13,7 +13,7 @@
 import { def } from '../util/index'
 
 const arrayProto = Array.prototype
-// 使用数组的原型创建一个新的对象
+// 使用数组的原型对象创建一个新的对象
 export const arrayMethods = Object.create(arrayProto)
 // 修改数组元素的方法，共同特征：都会修改原数组，有这七个
 const methodsToPatch = [

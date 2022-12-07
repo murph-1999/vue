@@ -89,6 +89,7 @@ function initProps(vm: Component, propsOptions: Object) {
         )
       }
       // 变成响应式存储到props中
+      // 如果不是根组件并且不是更新子组件，如果修改了父组件传递的prop时会报错
       defineReactive(props, key, value, () => {
         if (!isRoot && !isUpdatingChildComponent) {
           warn(
@@ -254,6 +255,7 @@ function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
+      // 说明是计算属性
       if (watcher.dirty) {
         watcher.evaluate()
       }
